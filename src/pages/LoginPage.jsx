@@ -43,6 +43,11 @@ const LoginPage = () => {
             .required()
             .matches(/\d+/, "Şifre rakam içermelidir.")
             .matches(/[a-z]+/, "Şifre küçük harf içermelidir.")
+            .matches(/[A-Z]+/, "Şifre büyük harf içermelidir.")
+            .matches(
+              /[!,?{}<>+-]+/,
+              `Password must contain special characters`
+            ),
         })}
         onSubmit={(values, actions) => {
           alert(
