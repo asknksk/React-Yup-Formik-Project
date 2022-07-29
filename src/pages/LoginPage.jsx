@@ -6,7 +6,9 @@ import TextField from "@mui/material/TextField";
 import Avatar from "@mui/material/Avatar";
 import { FaLock } from "react-icons/fa";
 import { Formik, Form } from "formik";
+import * as Yup from "yup";
 
+//! 👉validationSchema submit yaptığımızda fullname boşsa / yukarıdaki validasyona uymayan bir değer girilirse default olarak `fullName is a required field` mesajı verecek. Eğer fonksiyon içinde backtik içinde bir mesaj yazarsak o gelecek 👇
 const LoginPage = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: "10rem", textAlign: "center" }}>
@@ -27,6 +29,21 @@ const LoginPage = () => {
 
       <Formik
         initialValues={{ fullName: "", email: "", password: "" }}
+        validationSchema={Yup.object().shape({
+          fullName: Yup.string()
+            .max(20, "Must be 20 or less chracters")
+            .min(3)
+            .required("Please write your full name."),
+
+          email: Yup.string().email("Please enter valid email").required(),
+
+          password: Yup.string()
+            .min(8, "min 8 length")
+            .max(16)
+            .required()
+            .matches(/\d+/, "Şifre rakam içermelidir.")
+            .matches(/[a-z]+/, "Şifre küçük harf içermelidir.")
+        })}
         onSubmit={(values, actions) => {
           alert(
             `fullName: ${values.fullName} email: ${values.email} password: ${values.password}`
@@ -35,31 +52,51 @@ const LoginPage = () => {
           actions.setSubmitting(false);
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <TextField
-            label="Full Name"
-            name="fullName"
-            id="fullName"
-            type="type"
-            variant="outlined"
-          />
-          <TextField
-            label="Email"
-            name="email"
-            id="email"
-            type="email"
-            variant="outlined"
-          />
-          <TextField
-            label="password"
-            name="password"
-            id="password"
-            variant="outlined"
-          />
-          <Button type="submit" variant="contained" size="large">
-            Submit
-          </Button>
-        </Box>
+        {({ values, handleChange, errors, touched, handleBlur }) => (
+          <Form>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <TextField
+                label="Full Name"
+                name="fullName"
+                id="fullName"
+                type="text"
+                variant="outlined"
+                value={values.fullName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={touched.fullName && errors.fullName}
+                error={touched.fullName && Boolean(errors.fullName)}
+              />
+              <TextField
+                label="Email"
+                name="email"
+                id="email"
+                type="email"
+                variant="outlined"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={touched.email && errors.email}
+                error={touched.email && Boolean(errors.email)}
+              />
+              <TextField
+                label="password"
+                name="password"
+                id="password"
+                type={"password"}
+                variant="outlined"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                helperText={touched.password && errors.password}
+                error={touched.password && Boolean(errors.password)}
+              />
+              <Button type="submit" variant="contained" size="large">
+                Submit
+              </Button>
+            </Box>
+          </Form>
+        )}
       </Formik>
     </Container>
   );
